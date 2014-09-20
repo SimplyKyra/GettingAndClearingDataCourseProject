@@ -1,151 +1,98 @@
 
-#################################################
-# CodeBook: Run Analysis on the UCI HAR Dataset #
-#################################################
+# CodeBook: Run Analysis on the UCI HAR Dataset 
 
+Wearable Computing: Creating a tidy dataset using a Human Activity Recognition database built from the recordings of 30 subjects performing activities of daily living (ADL) while carrying a waist-mounted Samsung Galaxy S smartphone with embedded inertial sensors
 
-Wearable Computing: Creating a tidy dataset using a Human Activity Recognition 
-database built from the recordings of 30 subjects performing activities of 
-daily living (ADL) while carrying a waist-mounted Samsung Galaxy S smartphone 
-with embedded inertial sensors
+## Raw Data: 
+The raw data was taken from the files found within the 'UCI HAR Dataset' folder found where this CodeBook is located. It is the combination of the training and testing data that each contain:     
+* subject numbers (subject_train/test.txt)
+* activities the subjects do (y_train/text.txt)
+* measurements taken from the fitness devices (X_train/text.txt) 
 
-##################################################
+The measurements taken from the Samsung Galaxy S smartphone has no units and the information was normalized. The measurements are labelled using the features.txt file directly within 'UCI HAR Dataset'. The complete list of the variables taken from this raw information can be found in the Appendix I below. For a more complete description of these values you can read the features_info.txt file that resides in the 'UCI HAR Dataset' folder and describes the features.txt contents. The raw data can be downloaded from [here](https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip "Source of Data").
+    
+##Final Data: 
 
-Raw Data: 
-The raw data was taken from the files found within the 'UCI HAR Dataset' folder 
-found where this CodeBook is located. It is the combination of the training and 
-testing data that each contain:     
-    * subject numbers (subject_train/test.txt)
-    * activities the subjects do (y_train/text.txt)
-    * measurements taken from the fitness devices (X_train/text.txt) 
-The measurements taken from the Samsung Galaxy S smartphone has no units ad the 
-information was normalized. The measurements are labelled using the 
-features.txt file directly within 'UCI HAR Dataset'. The complete list of the 
-variables taken from this raw information can be found in the Appendix I below. 
-For a more complete description of these values you can read the 
-features_info.txt file that resides in the 'UCI HAR Dataset' folder and 
-describes the features.txt contents. The raw data was taken from:
-    https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip 
+There are only four columns in the resulting tidy dataset: Subject, Activity, Feature, and Average. These are described in detail below.
 
-##################################################
+The ID/Number of the Subject who the recordings are for. There were 30 subjects performing the activities so this number ranges from 1 to 30. 
 
-Final Data: 
+The name of the activity performed. The Activity Number (1 through 6) was read in and combined with the raw data from the test|train/y_test|train.txt file. This resulting column was then used to create a secondary column for the Activity Name. This colum was created by reading in activity_labels.txt and matching the activity number with the name of the activity. There were six activities. There raw version was: 
+   1. WALKING
+   2. WALKING_UPSTAIRS
+   3. WALKING_DOWNSTAIRS
+   4. SITTING
+   5. STANDING
+   6. LAYING
 
-There are only four columns in the resulting tidy dataset: Subject, Activity, 
-Feature, and Average. These are described in detail below:
+When the column was created the activity names were adjusted to be in lowercase and the underscores were replaced with spaces resulting in the final six possible values:     
+* laying
+* sitting
+* standing
+* walking
+* walking downstairs
+* walking upstairs
 
-######
+The final two columns (Feature and Average) come from the original data found in the test|train/X_test|train.txt file and whose labels were derived from the features.txt file. This resulted in 561 columns and 10299 rows of data. 
 
-The ID/Number of the Subject who the recordings are for. There were 30 subjects 
-performing the activities so this number ranges from 1 to 30. 
+I proceeded to clean the data by removing any unneeded columns from the dataset by only keeping the columns associated with the mean or standard deviation. This was determined by looking at the column headers and matching the text. To choose how to match the headers I looked at the description of the feature labels found within the features_info.txt file. It said the following:
+* mean():     Mean value
+* std():      Standard deviation
+* meanFreq(): Weighted average of the frequency components to obtain a mean frequency
+Because of this I chose to keep the columns that containing the text 'std' or 'mean()'. I chose to keep the brackets to match the mean as I wanted to exclude the 'meanFreq' columns.     
 
-######
+I then went on to make the column headers more user friendly by renaming them. The original column names, found in features.txt, use two prefixs: t and f. The 't' prefix is for time and the 'f' prefix is for the Frequency Domain Signals. I chose to abbreviate these to "T" and "FDS" respectfully:
+* t = Time = T
+* f = Frequency Domain Signals = FDS
 
-The name of the activity performed. The Activity Number (1 through 6) was read 
-in and combined with the raw data from the test|train/y_test|train.txt file. 
-This resulting column was then used to create a secondary column for the 
-Activity Name. This colum was created by reading in activity_labels.txt and 
-matching the activity number with the name of the activity. There were six 
-activities. There raw version was: 
-            1 WALKING
-            2 WALKING_UPSTAIRS
-            3 WALKING_DOWNSTAIRS
-            4 SITTING
-            5 STANDING
-            6 LAYING
-When the column was created the activity names were adjusted to be in lowercase 
-and the underscores were replaced with spaces resulting in the final six 
-possible values:     
-            laying
-            sitting
-            standing
-            walking
-            walking downstairs
-            walking upstairs
+I am also choosing to abbreviate the standard deviation to SD so the column headings don't get too large [(reasoning here)](http://www.allacronyms.com/standard_deviation/abbreviated "Std Dev Abbreviations").
 
-######
-            
-The final two columns (Feature and Average) come from the original data found 
-in the test|train/X_test|train.txt file and whose labels were derived from the 
-features.txt file. This resulted in 561 columns and 10299 rows of data. 
+I want this code to make the column headings more descriptive. If there is no X, Y, or Z at the end of the heading then it will go straight from main heading to the T/F abbreviation without the dash. Also any repetitive words (side by side) were removed; as this only occurs with 'BodyBody' it can be hardcoded.Additionally, we want to seperate our user defined columns at the capitals. Specifically these points are shown through these examples:
+* tGravityAcc-mean()-X --> Mean Gravity Acc - X (T) 
+* fBodyAcc-mean()-Z --> Mean Body Acc - Z (FDS) 
+* tBodyAccJerkMag-std()-Z --> SD Body Acc Jerk - Z (T) 
+* fBodyBodyGyroJerkMag-std() --> SD Body Gyro Jerk Mag (FDS)
+* ActivityName --> Activity Name
 
-I proceeded to clean the data by removing any unneeded columns from the dataset 
-by only keeping the columns associated with the mean or standard deviation. 
-This was determined by looking at the column headers and matching the text. To 
-choose how to match the headers I looked at the description of the feature 
-labels found within the features_info.txt file. It 
-said the following:
-    mean():     Mean value
-    std():      Standard deviation
-    meanFreq(): Weighted average of the frequency components to obtain a mean 
-    frequency
-Because of this I chose to keep the columns that containing the text 'std' or 
-'mean()'. I chose to keep the brackets to match the mean as I wanted to exclude 
-the 'meanFreq' columns.     
-
-I then went on to make the column headers more user friendly by renaming them. 
-The original column names, found in features.txt, use two prefixs: t and f. 
-The 't' prefix is for time and the 'f' prefix is for the Frequency Domain 
-Signals. I chose to abbreviate these to "T" and "FDS" respectfully:
-        t = Time = T
-        f = Frequency Domain Signals = FDS
-I am also choosing to abbreviate the standard deviation to SD so the column 
-headings don't get too large: 
-        http://www.allacronyms.com/standard_deviation/abbreviated
-I want this code to make the column headings more descriptive. If there is no 
-X, Y, or Z at the end of the heading then it will go straight from main heading 
-to the T/F abbreviation without the dash. Also any repetitive words (side by 
-side) were removed; as this only occurs with 'BodyBody' it can be hardcoded. 
-Additionally, we want to seperate our user defined columns at the capitals. 
-Specifically these points are shown through these examples:
-        tGravityAcc-mean()-X --> Mean Gravity Acc - X (T) 
-        fBodyAcc-mean()-Z --> Mean Body Acc - Z (FDS) 
-        tBodyAccJerkMag-std()-Z --> SD Body Acc Jerk - Z (T) 
-        fBodyBodyGyroJerkMag-std() --> SD Body Gyro Jerk Mag (FDS)
-        ActivityName --> Activity Name
-
-The Feature and Average columns were then created when I took this wide dataset 
-(an example in Appendix II Table 1) and made it narrow (Appendix II Table 2). I 
-chose to narrow it as then we could easily add more features without having to 
-change the schema; which would happen if each feature had it's own column (by 
-staying wide). When narrowing each feature column became a new row. The 
-resulting rows were then decreased by taking the average value for each unique 
-Subject, Activity, and Feature column set (example in Appendix II Table 3).
+The Feature and Average columns were then created when I took this wide dataset (an example in Appendix II Table 1) and made it narrow (Appendix II Table 2). I chose to narrow it as then we could easily add more features without having to change the schema; which would happen if each feature had it's own column (by staying wide). When narrowing each feature column became a new row. The resulting rows were then decreased by taking the average value for each unique Subject, Activity, and Feature column set (example in Appendix II Table 3).
 
 The resulting tidy dataset is then outputed: 'tidyDataOutput.txt'.    
     
+# Appendix
 
-##################################################    
-
-Appendix I - References
+## Appendix I - References
 
     * http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones
 
-##################################################
+## Appendix II - Example Tables
 
-Appendix II - Example Tables
-
-Table 1: Example of a Wide Dataset 
+### Table 1: Example of a Wide Dataset 
 Subject Activity    Feature1    Feature2    Feature3
 1       laying      .2216       -.0405      -.1132
 1       laying      -.9280      -.8368      -.8260
 2       walking     .7055       .4458       -.8968       
-    
-    
-Table 2: Resulting Narrowed Dataset
-Subject Activity    Feature     Value
-1       laying      Feature1    .2216 
-1       laying      Feature2    -.0405
-1       laying      Feature3    -.1132
-1       laying      Feature1    -.9280
-1       laying      Feature2    -.8368      
-1       laying      Feature3    -.8260
-2       walking     Feature1    .7055       
-2       walking     Feature2    .4458       
-2       walking     Feature3    -.8968 
 
 
-Table 3: Resulting Narrowed Averaged Dataset
+
+### Table 2: Resulting Narrowed Dataset
+
+
+|---------------------------------------|
+| Subject | Activity | Feature  | Value | 
+|---------------------------------------|
+|    1    | laying   | Feature1 | .2216 | 
+|    1    | laying   | Feature2 |-.0405 |
+|    1    | laying   | Feature3 |-.1132 |
+|    1    | laying   | Feature1 |-.9280 |
+|    1    | laying   | Feature2 |-.8368 |  
+|    1    | laying   | Feature3 |-.8260 |
+|    2    | walking  | Feature1 |.7055  |  
+|    2    | walking  | Feature2 |.4458  |  
+|    2    | walking  | Feature3 |-.8968 | 
+|---------------------------------------|
+
+
+### Table 3: Resulting Narrowed Averaged Dataset
 Subject Activity    Feature     Average
 1       laying      Feature1    -.3532
 1       laying      Feature2    -.4387
@@ -155,9 +102,7 @@ Subject Activity    Feature     Average
 2       walking     Feature3    -.8968 
 
 
-##################################################
-
-Appendix III - Columns in the Raw Data and Where They Were Located
+## Appendix III - Columns in the Raw Data and Where They Were Located
 
 test|train/subject_test|train.txt
     Subject Number
